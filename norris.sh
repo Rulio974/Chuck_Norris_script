@@ -34,14 +34,16 @@ booln=false
 number='^[0-9]+$'
 
 
-
+#fonction qui recupere les nombre de lignes (sans le retour chariot) du fichier facts.txt
+#se base sur le nombre de points
 function grep_ligne {
+
 
 	nb_ligne=$(grep "." facts.txt | wc -l) 
 
 }
 
-
+#gestion des options avec getopts
 while getopts "the:u:n:" option
 do
 	case "$option" in
@@ -59,9 +61,9 @@ do
 		    ;;
 		"u")
 			
-			boolu=true
-			arg_u="${OPTARG}"
-			if [ -z $"arg_u" ]
+			boolu=true 		# le flag a true
+			arg_u="${OPTARG}"	# recupere l argument suivant -u
+			if [ -z $"arg_u" ]	# verifie que l'argument n est pas null
 			then
 				echo "   - Il manque le pseudo."
 				exit 1
@@ -72,9 +74,9 @@ do
 		    ;;
 		"n")
 			
-			booln=true
-			arg_n="${OPTARG}"
-			if [ -z $"arg_n" ]
+			booln=true		# le flag a true
+			arg_n="${OPTARG}"	# Recupere l argument suivant -n
+			if [ -z $"arg_n" ]	# verifie que l argument n est pas null
 			then
 				echo "   - Il manque le numéro de ligne."
 				exit 1
@@ -83,16 +85,17 @@ do
 			
 
 
-			#si l'argument n est pas un nombre, on quitte
-			if ! [[ $arg_n =~ $number ]] || [[ $arg_n = 0 ]]
+			# verifie que l argument est un nombre positif
+			if ! [[ $arg_n =~ $number ]] || [[ $arg_n = 0 ]] 
 			then
 				echo "   - Le numéro de ligne n'est pas cohérent."
 				exit 1
 			fi
 
 
-			#verifie le numero de ligne
-			if [[ $arg_n > $nb_ligne ]]
+			# verifie que le numero de ligne est inferieur
+			# au nombre de ligne max
+			if [ $arg_n -gt $nb_ligne ]
 			then
 				
 				echo "   - Le numéro de ligne n'est pas cohérent."
@@ -110,10 +113,21 @@ do
 	esac
 done
 
+if [ $booln = true ] && [ $boolu = false ]
+then 
+	echo "   - Il manque le pseudo."
+	exit 1
+fi
 
-#Si les deux flags sont vrais, on remplace
-#Sinon, on exit 
+if [ $booln = false ] && [ $boolu = true ]	 
+then
+	echo "   - Il manque le numéro de ligne."
+	exit 1
 
+fi
+
+
+# Verifie 
 
 if [ $booln = true ] && [ $boolu = true ]
 then 
@@ -123,15 +137,9 @@ then
 	sed ''$arg_n' s/Chuck Norris/'$arg_u'/' facts.txt
 elif [ $booln = false ] && [ $boolu = false ]; then echo ""
 
-else
-	echo " - Les options u et n doivent être activées ensemble !"
+
 
 fi
-
-
-
-
-
 
 
 exit 0
