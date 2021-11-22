@@ -113,6 +113,7 @@ do
 	esac
 done
 
+
 if [ $booln = true ] && [ $boolu = false ]
 then 
 	echo "   - Il manque le pseudo."
